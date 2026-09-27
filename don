@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quizora — Interactive Learning Studio</title>
+<style>
+:root{
+  --bg:#f5f7ff;--panel:#fff;--panel2:#eef1ff;--text:#18203a;--muted:#69718b;
+  --primary:#6657ff;--primary2:#8c7dff;--accent:#16c79a;--danger:#ff5d73;--warning:#ffb547;
+  --border:#e3e6f2;--shadow:0 18px 50px rgba(45,48,100,.12);--radius:22px;
+}
+[data-theme="dark"]{
+  --bg:#101323;--panel:#171b30;--panel2:#202641;--text:#f3f5ff;--muted:#9ba3bf;
+  --border:#303751;--shadow:0 18px 50px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}
+.app{min-height:100vh}.hidden{display:none!important}.topbar{height:72px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:-.5px}.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--primary),#c76cff);display:grid;place-items:center;color:#fff;box-shadow:0 8px 20px #6657ff45}
+.top-actions{display:flex;gap:9px;align-items:center}.icon-btn,.ghost{background:var(--panel2);color:var(--text);padding:10px 13px;border-radius:12px}.icon-btn:hover,.ghost:hover{transform:translateY(-1px)}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ffcc70,#ff7eb3);display:grid;place-items:center;color:#fff;font-weight:800}
+.layout{display:grid;grid-template-columns:235px 1fr;min-height:calc(100vh - 72px)}.sidebar{border-right:1px solid var(--border);padding:22px 14px;background:var(--panel)}
+.nav{display:grid;gap:6px}.nav button{background:transparent;color:var(--muted);text-align:left;padding:12px 14px;border-radius:13px;font-weight:700}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--primary)}
+.content{padding:28px;max-width:1500px;width:100%;margin:auto}.view{display:none}.view.active{display:block}
+.hero{background:linear-gradient(135deg,#6657ff,#9d5cff 55%,#e274d9);border-radius:28px;padding:34px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:#fff1;right:-80px;top:-100px}.hero h1{margin:0 0 8px;font-size:36px;letter-spacing:-1px}.hero p{max-width:700px;margin:0 0 22px;color:#f0edff}
+.btn{padding:12px 17px;border-radius:13px;font-weight:800;transition:.18s}.btn:hover{transform:translateY(-2px)}.btn-primary{background:var(--primary);color:#fff;box-shadow:0 9px 20px #6657ff35}.btn-white{background:#fff;color:#5d4dff}.btn-danger{background:var(--danger);color:#fff}.btn-success{background:var(--accent);color:#fff}.btn-small{padding:9px 12px;font-size:13px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:28px 0 15px}.section-head h2{margin:0}.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}.stat,.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:19px;box-shadow:0 7px 25px rgba(40,50,100,.05)}.stat .big{font-size:27px;font-weight:900;margin-top:5px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.quiz-card{position:relative;min-height:190px;display:flex;flex-direction:column}.quiz-card h3{margin:7px 0 6px}.badge{display:inline-flex;width:max-content;padding:5px 9px;border-radius:999px;background:var(--panel2);color:var(--primary);font-size:12px;font-weight:800}.quiz-actions{display:flex;gap:7px;margin-top:auto;padding-top:15px;flex-wrap:wrap}
+.searchbar{display:flex;gap:10px}.input,.textarea,.select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:13px;padding:12px 14px;outline:none}.input:focus,.textarea:focus,.select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #6657ff18}.textarea{min-height:250px;resize:vertical}
+.creator{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.question-editor{display:grid;gap:14px}.q-row{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:17px}.q-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.answers{display:grid;gap:8px;margin-top:12px}.answer-row{display:grid;grid-template-columns:28px 1fr 40px;gap:7px;align-items:center}.answer-row input[type=text]{min-width:0}
+.notice{padding:11px 13px;border-radius:12px;background:#fff6db;color:#8a6200;margin-top:10px}.error{background:#ffe7eb;color:#b3263b}.success{background:#e2fff7;color:#08775e}
+.mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.mode{padding:17px;border:1px solid var(--border);background:var(--panel);border-radius:17px;text-align:left}.mode.selected{border:2px solid var(--primary);background:var(--panel2)}.mode .emoji{font-size:28px}.mode b{display:block;margin:8px 0 4px}
+.game-shell{max-width:980px;margin:0 auto}.game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.progress{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),#c568ff);transition:.35s}.game-card{background:var(--panel);border:1px solid var(--border);border-radius:28px;padding:30px;box-shadow:var(--shadow);margin-top:16px}.question{font-size:27px;font-weight:850;line-height:1.25;margin:10px 0 22px}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.option{padding:17px;border:2px solid var(--border);background:var(--panel);color:var(--text);border-radius:17px;text-align:left;font-weight:750;min-height:66px}.option:hover{border-color:var(--primary)}.option.selected{border-color:var(--primary);background:#6657ff14}.option.correct{border-color:var(--accent);background:#16c79a17}.option.wrong{border-color:var(--danger);background:#ff5d7315}.game-footer{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px}.timer{font-weight:900;color:var(--primary)}.timer.danger{color:var(--danger)}.countdown{font-size:12px;color:var(--muted)}
+.result{text-align:center;max-width:800px;margin:20px auto}.result-score{font-size:74px;font-weight:950;line-height:1;background:linear-gradient(135deg,var(--primary),#d25cff);-webkit-background-clip:text;color:transparent}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}.review-list{display:grid;gap:12px;text-align:left}.review-item{padding:17px;border:1px solid var(--border);border-radius:17px;background:var(--panel)}.review-item.correct{border-left:6px solid var(--accent)}.review-item.wrong{border-left:6px solid var(--danger)}
+.profile-grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:18px}.profile-head{text-align:center}.big-avatar{width:100px;height:100px;margin:auto;border-radius:30px;background:linear-gradient(135deg,#ffcf70,#ff70ae);display:grid;place-items:center;font-size:42px;color:#fff;font-weight:900}.xpbar{height:12px;background:var(--panel2);border-radius:99px;overflow:hidden}.xpbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#6ce8d0)}
+.chart{height:240px;display:flex;align-items:end;gap:8px;padding:20px 8px 8px}.bar{flex:1;background:linear-gradient(to top,var(--primary),#b88cff);border-radius:8px 8px 2px 2px;min-height:8px;position:relative}.bar span{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted)}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.setting{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--border)}
+.toggle{width:48px;height:27px;border-radius:99px;background:#bbc1d1;padding:3px}.toggle i{display:block;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s}.toggle.on{background:var(--primary)}.toggle.on i{transform:translateX(21px)}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--text);color:var(--panel);padding:13px 17px;border-radius:14px;box-shadow:var(--shadow);z-index:99;animation:pop .25s}.confetti{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}.piece{position:absolute;width:9px;height:15px;animation:fall 1.5s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}@keyframes pop{from{transform:translateY(10px);opacity:0}}
+.mobile-nav{display:none}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,1fr)}.mode-grid{grid-template-columns:repeat(3,1fr)}.creator{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.topbar{padding:0 14px}.layout{display:block}.sidebar{display:none}.content{padding:16px 14px 82px}.hero h1{font-size:28px}.grid,.options,.settings-grid,.profile-grid{grid-template-columns:1fr}.mode-grid{grid-template-columns:1fr 1fr}.stats,.result-grid{grid-template-columns:1fr 1fr}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--border);z-index:30;justify-content:space-around;padding:8px}.mobile-nav button{background:none;color:var(--muted);font-size:11px}.mobile-nav button.active{color:var(--primary)}.question{font-size:22px}.game-card{padding:20px}.top-actions .ghost{display:none}}
+</style>
+</head>
+<body>
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">Q</div> Quizora</div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Theme">☀️/🌙</button>
+      <button class="icon-btn" onclick="toggleMusic()" id="musicBtn">🔊</button>
+      <div class="avatar" id="avatarTop">K</div>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button data-view="home" onclick="showView('home')">🏠 Home</button>
+        <button data-view="creator" onclick="showView('creator')">✨ Create Quiz</button>
+        <button data-view="discover" onclick="showView('discover')">🔎 Discover</button>
+        <button data-view="profile" onclick="showView('profile')">👤 Profile</button>
+        <button data-view="stats" onclick="showView('stats')">📊 Analytics</button>
+        <button data-view="settings" onclick="showView('settings')">⚙️ Settings</button>
+      </nav>
+      <div class="card" style="margin-top:25px">
+        <div class="muted">Your progress</div><strong id="sideLevel">Level 1</strong>
+        <div class="xpbar" style="margin-top:10px"><i id="sideXp" style="width:12%"></i></div>
+        <small class="muted" id="sideXpText">120 / 1000 XP</small>
+      </div>
+    </aside>
+    <main class="content">
+      <section id="view-home" class="view active"></section>
+      <section id="view-creator" class="view"></section>
+      <section id="view-discover" class="view"></section>
+      <section id="view-profile" class="view"></section>
+      <section id="view-stats" class="view"></section>
+      <section id="view-settings" class="view"></section>
+      <section id="view-game" class="view"></section>
+      <section id="view-result" class="view"></section>
+    </main>
+  </div>
+  <nav class="mobile-nav">
+    <button data-view="home" onclick="showView('home')">🏠<br>Home</button>
+    <button data-view="creator" onclick="showView('creator')">✨<br>Create</button>
+    <button data-view="discover" onclick="showView('discover')">🔎<br>Discover</button>
+    <button data-view="profile" onclick="showView('profile')">👤<br>Profile</button>
+  </nav>
+</div>
+<input type="file" id="jsonInput" accept=".json" class="hidden" />
+
+<script>
+const KEY='quizora_state_v1';
+const defaultQuiz={
+ id:crypto.randomUUID(),title:'Macbeth Essentials',subject:'English',difficulty:'Medium',tags:['Macbeth','Literature'],
+ questions:[
+  {id:crypto.randomUUID(),type:'mcq',text:'What is Macbeth’s fatal flaw?',options:['Ambition','Kindness','Patience','Honesty'],correct:[0],explanation:'Macbeth’s unchecked ambition pushes him toward destructive choices.'},
+  {id:crypto.randomUUID(),type:'mcq',text:'Who tells Macbeth the prophecy?',options:['The witches','Banquo','Duncan','Macduff'],correct:[0],explanation:'The three witches introduce the prophecies.'},
+  {id:crypto.randomUUID(),type:'mcq',text:'What does Macbeth see before killing Duncan?',options:['A crown','A floating dagger','A ghost','A raven'],correct:[1],explanation:'The dagger vision represents Macbeth’s guilt, fear, and violent intention.'}
+ ]};
+let state=JSON.parse(localStorage.getItem(KEY)||'null')||{
+ user:{name:'Kate',avatar:'K',xp:120,coins:80,streak:3,level:1,totalAnswered:0,totalCorrect:0,games:0,badges:['First Quiz']},
+ quizzes:[defaultQuiz],folders:['Chemistry','English','Chinese','Math'],history:[],theme:'light',music:true,sfx:true,animations:true
+};
+let game=null, musicCtx=null, musicTimer=null;
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state)); updateShell();}
+function esc(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+Math.random()}
+function toast(msg){let t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function updateShell(){
+ document.documentElement.dataset.theme=state.theme==='dark'?'dark':'';
+ document.getElementById('avatarTop').textContent=state.user.avatar;
+ document.getElementById('sideLevel').textContent='Level '+state.user.level;
+ let pct=Math.min(100,(state.user.xp%1000)/10);document.getElementById('sideXp').style.width=pct+'%';
+ document.getElementById('sideXpText').textContent=(state.user.xp%1000)+' / 1000 XP';
+ document.getElementById('musicBtn').textContent=state.music?'🔊':'🔇';
+}
+function showView(name){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ const v=document.getElementById('view-'+name); if(v){v.classList.add('active');}
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
+ if(name==='home')renderHome(); if(name==='creator')renderCreator(); if(name==='discover')renderDiscover();
+ if(name==='profile')renderProfile(); if(name==='stats')renderStats(); if(name==='settings')renderSettings();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderHome(){
+ const qs=state.quizzes;
+ document.getElementById('view-home').innerHTML=`
+ <div class="hero"><div style="position:relative;z-index:1"><div class="badge" style="background:#fff2;color:#fff">LEVEL ${state.user.level} • 🔥 ${state.user.streak} DAY STREAK</div>
+ <h1>Learn it. Play it. Master it. 🚀</h1><p>Create a quiz in seconds, turn it into a game, and see exactly what you know.</p>
+ <button class="btn btn-white" onclick="showView('creator')">✨ Create a quiz</button>
+ <button class="btn ghost" style="color:#fff;background:#ffffff22;margin-left:7px" onclick="joinCode()">🎮 Join game</button></div></div>
+ <div class="stats">
+ <div class="stat">⚡ XP<div class="big">${state.user.xp.toLocaleString()}</div><span class="muted">Level ${state.user.level}</span></div>
+ <div class="stat">🪙 Coins<div class="big">${state.user.coins}</div><span class="muted">Keep playing to earn</span></div>
+ <div class="stat">🎯 Accuracy<div class="big">${state.user.totalAnswered?Math.round(state.user.totalCorrect/state.user.totalAnswered*100):0}%</div><span class="muted">${state.user.totalAnswered} answers</span></div>
+ <div class="stat">🏆 Quizzes<div class="big">${state.user.games}</div><span class="muted">completed</span></div></div>
+ <div class="section-head"><h2>My quizzes</h2><div class="searchbar"><input id="homeSearch" class="input" style="width:230px" placeholder="Search..." oninput="renderQuizGrid(this.value)"></div></div>
+ <div id="homeGrid" class="grid"></div>`;
+ renderQuizGrid('');
+}
+function renderQuizGrid(filter=''){
+ const box=document.getElementById('homeGrid'); if(!box)return;
+ let qs=state.quizzes.filter(q=>q.title.toLowerCase().includes(filter.toLowerCase()));
+ box.innerHTML=qs.length?qs.map(q=>quizCard(q)).join(''):`<div class="card"><h3>No quizzes yet</h3><p class="muted">Create your first one.</p></div>`;
+}
+function quizCard(q){
+ return `<article class="card quiz-card"><span class="badge">${esc(q.subject||'General')} • ${esc(q.difficulty||'Medium')}</span>
+ <h3>${esc(q.title)}</h3><div class="muted">${q.questions.length} questions • ${q.tags?.join(' • ')||'Custom quiz'}</div>
+ <div class="quiz-actions"><button class="btn btn-primary btn-small" onclick="openMode('${q.id}')">▶ Play</button>
+ <button class="ghost btn-small" onclick="editQuiz('${q.id}')">✏️ Edit</button>
+ <button class="ghost btn-small" onclick="duplicateQuiz('${q.id}')">⧉</button>
+ <button class="ghost btn-small" onclick="exportQuiz('${q.id}')">↓</button>
+ <button class="ghost btn-small" onclick="deleteQuiz('${q.id}')">🗑</button></div></article>`;
+}
+function renderCreator(existingId=null){
+ const q=existingId?state.quizzes.find(x=>x.id===existingId):null;
+ window.creatorEditing=existingId||null;
+ document.getElementById('view-creator').innerHTML=`
+ <div class="section-head"><div><h2>${q?'Edit quiz':'Create a quiz'}</h2><p class="muted">Paste your questions or build them manually.</p></div>
+ <button class="ghost" onclick="showView('home')">← Dashboard</button></div>
+ <div class="creator">
+ <div>
+  <div class="card"><label>Quiz title</label><input id="quizTitle" class="input" value="${esc(q?.title||'')}" placeholder="e.g. Macbeth Final Review">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px"><div><label>Subject</label><input id="quizSubject" class="input" value="${esc(q?.subject||'General')}"></div><div><label>Difficulty</label><select id="quizDifficulty" class="select"><option ${q?.difficulty==='Easy'?'selected':''}>Easy</option><option ${q?.difficulty==='Medium'||!q?'selected':''}>Medium</option><option ${q?.difficulty==='Hard'?'selected':''}>Hard</option></select></div></div></div>
+  <div class="card" style="margin-top:15px"><div class="section-head" style="margin:0 0 10px"><h3>Import questions</h3><span class="badge">Smart parser</span></div>
+   <textarea id="importText" class="textarea" placeholder="1. What is the capital of France?&#10;A. London&#10;B. Paris&#10;C. Rome&#10;D. Madrid&#10;Answer: B"></textarea>
+   <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" onclick="parseImport()">✨ Parse & preview</button><button class="ghost" onclick="document.getElementById('jsonInput').click()">Import JSON</button></div>
+   <div id="parseMsg"></div>
+  </div>
+  <div class="section-head"><h3>Questions</h3><button class="btn btn-success btn-small" onclick="addQuestion()">＋ Add question</button></div>
+  <div id="questionEditors" class="question-editor"></div>
+ </div>
+ <div>
+  <div class="card"><h3>Quiz settings</h3><div class="setting"><span>Auto-next</span><b>5 seconds</b></div><div class="setting"><span>Instant feedback</span><b>On</b></div><div class="setting"><span>Keyboard controls</span><b>On</b></div><div class="setting"><span>Sound effects</span><b>On</b></div></div>
+  <div class="card" style="margin-top:15px"><h3>Publish</h3><p class="muted">Save locally on this device. Export JSON anytime for backup.</p><button class="btn btn-primary" style="width:100%" onclick="saveCreator()">💾 Save quiz</button></div>
+ </div></div>`;
+ window.creatorQuestions=JSON.parse(JSON.stringify(q?.questions||[]));
+ renderEditors();
+}
+function renderEditors(){
+ const box=document.getElementById('questionEditors'); if(!box)return;
+ box.innerHTML=window.creatorQuestions.map((q,i)=>`<div class="q-row">
+ <div class="q-head"><strong>Question ${i+1}</strong><div><button class="ghost btn-small" onclick="moveQ(${i},-1)">↑</button><button class="ghost btn-small" onclick="moveQ(${i},1)">↓</button><button class="ghost btn-small" onclick="dupQ(${i})">⧉</button><button class="ghost btn-small" onclick="removeQ(${i})">🗑</button></div></div>
+ <input class="input" style="margin-top:10px" value="${esc(q.text)}" oninput="setQ(${i},'text',this.value)" placeholder="Question">
+ <div class="answers">${(q.options||['','']).map((a,j)=>`<div class="answer-row"><input type="checkbox" ${q.correct?.includes(j)?'checked':''} onchange="toggleCorrect(${i},${j},this.checked)" aria-label="Correct answer"><input class="input" value="${esc(a)}" oninput="setOpt(${i},${j},this.value)" placeholder="Option ${String.fromCharCode(65+j)}"><button class="ghost" onclick="removeOpt(${i},${j})">×</button></div>`).join('')}</div>
+ <button class="ghost btn-small" style="margin-top:9px" onclick="addOpt(${i})">＋ option</button>
+ <textarea class="textarea" style="min-height:75px;margin-top:9px" oninput="setQ(${i},'explanation',this.value)" placeholder="Explanation (optional)">${esc(q.explanation||'')}</textarea>
+ </div>`).join('')||`<div class="card"><p class="muted">No questions yet. Add one or paste a block above.</p></div>`;
+}
+function addQuestion(){window.creatorQuestions.push({id:uid(),type:'mcq',text:'',options:['',''],correct:[0],explanation:''});renderEditors()}
+function removeQ(i){window.creatorQuestions.splice(i,1);renderEditors()}
+function dupQ(i){let x=JSON.parse(JSON.stringify(window.creatorQuestions[i]));x.id=uid();window.creatorQuestions.splice(i+1,0,x);renderEditors()}
+function moveQ(i,d){let j=i+d;if(j<0||j>=window.creatorQuestions.length)return;[window.creatorQuestions[i],window.creatorQuestions[j]]=[window.creatorQuestions[j],window.creatorQuestions[i]];renderEditors()}
+function setQ(i,k,v){window.creatorQuestions[i][k]=v}
+function setOpt(i,j,v){window.creatorQuestions[i].options[j]=v}
+function toggleCorrect(i,j,on){let c=window.creatorQuestions[i].correct||[];if(on&&!c.includes(j))c.push(j);if(!on)c=c.filter(x=>x!==j);window.creatorQuestions[i].correct=c.length?c:[0];}
+function addOpt(i){window.creatorQuestions[i].options.push('');renderEditors()}
+function removeOpt(i,j){if(window.creatorQuestions[i].options.length<=2)return toast('A question needs at least 2 options.');window.creatorQuestions[i].options.splice(j,1);window.creatorQuestions[i].correct=window.creatorQuestions[i].correct.filter(x=>x!==j).map(x=>x>j?x-1:x);if(!window.creatorQuestions[i].correct.length)window.creatorQuestions[i].correct=[0];renderEditors()}
+function parseImport(){
+ const raw=document.getElementById('importText').value.trim();const msg=document.getElementById('parseMsg');if(!raw){msg.innerHTML='<div class="notice error">Paste some questions first.</div>';return}
+ const parsed=parseQuestions(raw);if(!parsed.length){msg.innerHTML='<div class="notice error">I could not find valid multiple-choice questions. Check that each answer has A/B/C/D and an Answer/Correct/Ans/Đáp án line.</div>';return}
+ window.creatorQuestions=[...window.creatorQuestions,...parsed];renderEditors();msg.innerHTML=`<div class="notice success">✓ Parsed ${parsed.length} question(s). You can edit them below.</div>`;toast('Questions imported!')}
+function parseQuestions(raw){
+ raw=raw.replace(/\r/g,'');let lines=raw.split('\n').map(x=>x.trim()).filter(Boolean), blocks=[], cur=[];
+ for(const line of lines){
+   if(/^(?:\d+[\).:]|Q(?:uestion)?\s*\d+[\).:]?)/i.test(line)&&cur.length){blocks.push(cur);cur=[line]}else cur.push(line);
+ }
+ if(cur.length)blocks.push(cur);
+ let out=[];
+ for(const b of blocks){
+   let qline=b.find(x=>/^(?:\d+[\).:]|Q(?:uestion)?\s*\d+[\).:]?)/i.test(x))||b[0]; 
+   let text=qline.replace(/^(?:\d+[\).:]|Q(?:uestion)?\s*\d+[\).:]?)[\s-]*/i,'').trim();
+   let opts=[],ans=null,answerIndex=null;
+   b.forEach(line=>{let m=line.match(/^([A-Z])[\).:\-]\s*(.+)$/i);if(m&&['A','B','C','D','E','F'].includes(m[1].toUpperCase()))opts.push(m[2].trim());
+     let a=line.match(/^(?:answer|correct|ans|đáp án)\s*[:\-]?\s*([A-Z])(?:\s*,\s*([A-Z]))?/i);if(a)ans=a.slice(1).filter(Boolean).map(x=>x.toUpperCase());});
+   if(!ans){let m=b.join(' ').match(/(?:answer|correct|ans|đáp án)\s*[:\-]?\s*([A-Z](?:\s*,\s*[A-Z])*)/i);if(m)ans=m[1].split(',').map(x=>x.trim().toUpperCase())}
+   if(ans&&opts.length>=2) answerIndex=ans.map(x=>x.charCodeAt(0)-65).filter(i=>i>=0&&i<opts.length);
+   if(text&&opts.length>=2&&answerIndex?.length)out.push({id:uid(),type:'mcq',text,options:opts,correct:answerIndex,explanation:''});
+ }
+ return out;
+}
+function saveCreator(){
+ const title=document.getElementById('quizTitle').value.trim();let qs=window.creatorQuestions||[];
+ if(!title)return toast('Please enter a quiz title.');if(!qs.length)return toast('Add at least one question.');
+ let invalid=qs.find(q=>!q.text.trim()||q.options.filter(Boolean).length<2||!q.correct?.length||q.correct.some(i=>!q.options[i]?.trim()));
+ if(invalid)return toast('Fix empty questions/options or missing answers.');
+ qs=qs.map(q=>({...q,text:q.text.trim(),options:q.options.map(x=>x.trim())}));
+ if(window.creatorEditing){let q=state.quizzes.find(x=>x.id===window.creatorEditing);Object.assign(q,{title,subject:document.getElementById('quizSubject').value.trim()||'General',difficulty:document.getElementById('quizDifficulty').value,questions:qs});}
+ else state.quizzes.unshift({id:uid(),title,subject:document.getElementById('quizSubject').value.trim()||'General',difficulty:document.getElementById('quizDifficulty').value,tags:[],questions:qs});
+ save();toast('Quiz saved!');showView('home');
+}
+function editQuiz(id){showView('creator');renderCreator(id)}
+function duplicateQuiz(id){let q=state.quizzes.find(x=>x.id===id);let c=JSON.parse(JSON.stringify(q));c.id=uid();c.title=q.title+' Copy';c.questions=c.questions.map(x=>({...x,id:uid()}));state.quizzes.unshift(c);save();toast('Quiz duplicated.');renderHome()}
+function deleteQuiz(id){if(!confirm('Delete this quiz?'))return;state.quizzes=state.quizzes.filter(x=>x.id!==id);save();renderHome();toast('Quiz deleted.')}
+function exportQuiz(id){let q=state.quizzes.find(x=>x.id===id);download(JSON.stringify(q,null,2),q.title.replace(/[^a-z0-9]+/gi,'-')+'.json','application/json')}
+function download(text,name,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+document.getElementById('jsonInput').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let q=JSON.parse(r.result);if(!q.title||!Array.isArray(q.questions))throw Error();q.id=uid();state.quizzes.unshift(q);save();toast('Quiz imported!');showView('home')}catch{toast('Invalid quiz JSON.')}};r.readAsText(f);e.target.value=''});
+
+function openMode(id){
+ let q=state.quizzes.find(x=>x.id===id);if(!q)return;
+ document.getElementById('view-home').dataset.pending=id;
+ document.getElementById('view-game').innerHTML=`<div class="game-shell"><div class="section-head"><div><h2>Choose your game mode</h2><p class="muted">${esc(q.title)} • ${q.questions.length} questions</p></div><button class="ghost" onclick="showView('home')">← Back</button></div>
+ <div class="mode-grid">${[
+ ['classic','🎯','Classic Quiz','Classic question-by-question'],
+ ['speed','⚡','Speed Run','Correct + fast = more points'],
+ ['survival','❤️','Survival','Three lives'],
+ ['streak','🔥','Streak Challenge','Build your longest streak'],
+ ['boss','👾','Boss Battle','Damage the boss'],
+ ['time','⏱️','Time Attack','Beat the clock'],
+ ['treasure','🏝️','Treasure Hunt','Unlock the map'],
+ ['million','💰','Millionaire','Lifelines + prize ladder']
+ ].map((m,i)=>`<button class="mode ${i===0?'selected':''}" data-mode="${m[0]}" onclick="selectMode(this)"><span class="emoji">${m[1]}</span><b>${m[2]}</b><small class="muted">${m[3]}</small></button>`).join('')}</div>
+ <div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="startGame('${id}')">🚀 Start game</button></div></div>`;
+ showView('game');
+}
+function selectMode(el){document.querySelectorAll('.mode').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}
+function startGame(id){
+ let q=state.quizzes.find(x=>x.id===id),mode=document.querySelector('.mode.selected')?.dataset.mode||'classic';
+ if(!q?.questions.length)return toast('This quiz has no questions.');
+ game={quiz:q,mode,index:0,answers:Array(q.questions.length).fill(null),times:Array(q.questions.length).fill(0),startedAt:Date.now(),questionStarted:Date.now(),score:0,correct:0,streak:0,bestStreak:0,lives:3,totalTime:mode==='time'?60:null,ended:false,autoTimer:null};
+ renderGame(); startTick();
+}
+function startTick(){clearInterval(game.tick);game.tick=setInterval(()=>{if(!game||game.ended)return;let elapsed=(Date.now()-game.questionStarted)/1000;game.times[game.index]=Math.round(elapsed);if(game.mode==='time'){game.totalTime--;if(game.totalTime<=0)finishGame()}renderGameTimerOnly()},1000)}
+function renderGameTimerOnly(){let t=document.getElementById('timerVal');if(!t||!game)return;let val=game.mode==='time'?game.totalTime:Math.max(0,10-game.times[game.index]);t.textContent=game.mode==='time'?val+'s':(game.answers[game.index]!==null?'Answered':'Auto next '+val+'s');t.classList.toggle('danger',game.mode==='time'&&game.totalTime<=10)}
+function renderGame(){
+ if(!game)return;let q=game.quiz.questions[game.index],ans=game.answers[game.index],answered=ans!==null;
+ let modeLabel={classic:'🎯 Classic',speed:'⚡ Speed Run',survival:'❤️ Survival',streak:'🔥 Streak',boss:'👾 Boss Battle',time:'⏱️ Time Attack',treasure:'🏝️ Treasure Hunt',million:'💰 Millionaire'}[game.mode];
+ document.getElementById('view-game').innerHTML=`<div class="game-shell">
+ <div class="game-top"><div><b>${modeLabel}</b><div class="muted">${game.quiz.title}</div></div><div class="timer" id="timerVal">${game.mode==='time'?game.totalTime+'s':answered?'Answered':'Auto next 10s'}</div></div>
+ <div class="progress"><i style="width:${(game.index+1)/game.quiz.questions.length*100}%"></i></div>
+ <div class="game-card">
+ <div class="muted">Question ${game.index+1} of ${game.quiz.questions.length} ${game.mode==='survival'?' • ❤️'.repeat(game.lives):''}</div>
+ <div class="question">${esc(q.text)}</div>
+ <div class="options">${q.options.map((o,i)=>{let cls='';if(answered){if(q.correct.includes(i))cls='correct';else if(ans.includes(i))cls='wrong'}else if(ans?.includes(i))cls='selected';return `<button class="option ${cls}" ${answered?'disabled':''} onclick="chooseAnswer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`}).join('')}</div>
+ ${answered?`<div class="notice ${q.correct.every(x=>ans.includes(x))&&ans.length===q.correct.length?'success':'error'}">${q.correct.every(x=>ans.includes(x))&&ans.length===q.correct.length?'✓ Correct!':'✕ Not quite.'} ${esc(q.explanation||'')}</div>`:''}
+ <div class="game-footer"><button class="ghost" onclick="quitGame()">← Quit</button><div class="countdown">${answered?'Already answered — no auto timer when revisiting':''}</div><div style="display:flex;gap:8px"><button class="ghost" onclick="prevQuestion()">←</button><button class="btn btn-primary" onclick="nextQuestion()">${game.index===game.quiz.questions.length-1?'Finish':'Next →'}</button></div></div>
+ </div></div>`;
+ renderGameTimerOnly();
+}
+function chooseAnswer(i){
+ if(!game||game.answers[game.index]!==null)return;
+ let q=game.quiz.questions[game.index],ans=[i];game.answers[game.index]=ans;game.times[game.index]=Math.round((Date.now()-game.questionStarted)/1000);
+ let correct=q.correct.includes(i)&&q.correct.length===1;
+ if(correct){game.correct++;game.streak++;game.bestStreak=Math.max(game.bestStreak,game.streak);let bonus=game.mode==='speed'?Math.max(0,10-game.times[game.index])*5:0;game.score+=100+bonus;if(game.mode==='boss')game.score+=150}
+ else {game.streak=0;if(game.mode==='survival')game.lives--;if(game.mode==='time')game.totalTime=Math.max(0,game.totalTime-3)}
+ playSfx(correct?'correct':'wrong');renderGame();
+ if(game.mode==='survival'&&game.lives<=0){setTimeout(finishGame,700);return}
+ if(game.index<game.quiz.questions.length-1){clearTimeout(game.autoTimer);game.autoTimer=setTimeout(()=>{if(game&&game.answers[game.index]!==null)nextQuestion()},5000)}
+ else {clearTimeout(game.autoTimer);setTimeout(finishGame,800)}
+}
+function nextQuestion(){if(!game)return;if(game.index===game.quiz.questions.length-1){finishGame();return}game.index++;game.questionStarted=Date.now();renderGame()}
+function prevQuestion(){if(!game||game.index===0)return;game.index--;game.questionStarted=Date.now();renderGame()}
+function quitGame(){if(confirm('Leave this game? Your current answers will be lost.')){clearInterval(game?.tick);game=null;showView('home')}}
+function finishGame(){
+ if(!game||game.ended)return;game.ended=true;clearInterval(game.tick);clearTimeout(game.autoTimer);
+ let total=game.quiz.questions.length, pct=Math.round(game.correct/total*100),xp=game.correct*25+game.bestStreak*10+(pct===100?100:0);
+ state.user.xp+=xp;state.user.coins+=Math.max(5,Math.round(game.score/100));state.user.totalAnswered+=total;state.user.totalCorrect+=game.correct;state.user.games++;
+ state.user.level=Math.floor(state.user.xp/1000)+1;
+ if(pct===100&&!state.user.badges.includes('Perfect Score'))state.user.badges.push('Perfect Score');
+ state.history.unshift({quizId:game.quiz.id,title:game.quiz.title,score:game.score,pct,correct:game.correct,total,avgTime:Math.round(game.times.reduce((a,b)=>a+b,0)/total),answers:game.answers.slice(),times:game.times.slice(),date:new Date().toISOString()});
+ state.history=state.history.slice(0,30);save();playSfx('win');if(pct>=80)confetti();
+ renderResult(pct,xp);showView('result');
+}
+function renderResult(pct,xp){
+ document.getElementById('view-result').innerHTML=`<div class="result"><div class="card">
+ <div style="font-size:45px">${pct===100?'🎉':'✨'}</div><div class="muted">RESULT</div><h1>${pct===100?'PERFECT!':'Great run!'}</h1><div class="result-score">${pct}%</div><p class="muted">${game.correct} / ${game.quiz.questions.length} correct • ${game.quiz.title}</p>
+ <div class="result-grid"><div class="stat">⭐ Score<div class="big">${game.score}</div></div><div class="stat">🔥 Best streak<div class="big">${game.bestStreak}</div></div><div class="stat">⚡ XP<div class="big">+${xp}</div></div><div class="stat">🪙 Coins<div class="big">+${Math.max(5,Math.round(game.score/100))}</div></div></div>
+ <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="reviewQuiz()">📖 Review answers</button><button class="ghost" onclick="startGame('${game.quiz.id}')">↻ Replay</button><button class="ghost" onclick="showView('home')">🏠 Dashboard</button></div>
+ </div></div>`;
+}
+function reviewQuiz(){game.review=true;game.index=0;renderReview()}
+function renderReview(){
+ let q=game.quiz.questions[game.index],ans=game.answers[game.index]||[],ok=q.correct.every(x=>ans.includes(x))&&ans.length===q.correct.length;
+ document.getElementById('view-result').innerHTML=`<div class="game-shell"><div class="section-head"><div><h2>Review answers</h2><p class="muted">Question ${game.index+1} of ${game.quiz.questions.length}</p></div><button class="ghost" onclick="renderResult(Math.round(game.correct/game.quiz.questions.length*100),0)">← Results</button></div>
+ <div class="game-card"><div class="badge ${ok?'success':'error'}">${ok?'✓ Correct':'✕ Incorrect'}</div><div class="question">${esc(q.text)}</div>
+ <div class="review-list"><div class="review-item ${ok?'correct':'wrong'}"><b>Your answer</b><div>${ans.map(i=>String.fromCharCode(65+i)+'. '+esc(q.options[i])).join('<br>')||'No answer'}</div></div>
+ <div class="review-item correct"><b>Correct answer</b><div>${q.correct.map(i=>String.fromCharCode(65+i)+'. '+esc(q.options[i])).join('<br>')}</div></div>
+ <div class="review-item"><b>Explanation</b><div class="muted">${esc(q.explanation||'No explanation added.')}</div></div></div>
+ <div class="game-footer"><button class="ghost" onclick="reviewPrev()">← Previous</button><span>${game.times[game.index]}s</span><button class="btn btn-primary" onclick="reviewNext()">${game.index===game.quiz.questions.length-1?'Back to results':'Next →'}</button></div></div></div>`;
+}
+function reviewNext(){if(game.index===game.quiz.questions.length-1){renderResult(Math.round(game.correct/game.quiz.questions.length*100),0);return}game.index++;renderReview()}
+function reviewPrev(){if(game.index>0){game.index--;renderReview()}}
+function joinCode(){let code=prompt('Enter a game code:');if(code)toast('Demo lobby: code '+code.toUpperCase()+' is ready to connect.')}
+function renderDiscover(){
+ let all=state.quizzes;document.getElementById('view-discover').innerHTML=`<div class="section-head"><div><h2>Discover</h2><p class="muted">Find something to practice.</p></div><div class="searchbar"><input id="discSearch" class="input" placeholder="Search quizzes..." oninput="filterDiscover(this.value)"></div></div>
+ <div id="discoverGrid" class="grid">${all.map(quizCard).join('')}</div>`}
+function filterDiscover(v){let box=document.getElementById('discoverGrid');let qs=state.quizzes.filter(q=>(q.title+' '+q.subject+' '+(q.tags||[]).join(' ')).toLowerCase().includes(v.toLowerCase()));box.innerHTML=qs.map(quizCard).join('')||'<div class="card">No matches.</div>'}
+function renderProfile(){
+ let u=state.user;let pct=u.totalAnswered?Math.round(u.totalCorrect/u.totalAnswered*100):0;
+ document.getElementById('view-profile').innerHTML=`<div class="section-head"><div><h2>Your profile</h2><p class="muted">Your learning journey.</p></div></div>
+ <div class="profile-grid"><div class="card profile-head"><div class="big-avatar">${esc(u.avatar)}</div><h2>${esc(u.name)}</h2><span class="badge">Level ${u.level}</span><div style="margin:20px 0;text-align:left"><div style="display:flex;justify-content:space-between"><span>XP</span><b>${u.xp%1000}/1000</b></div><div class="xpbar" style="margin-top:7px"><i style="width:${u.xp%1000/10}%"></i></div></div><div class="stats" style="grid-template-columns:1fr 1fr"><div class="stat">🔥<div class="big">${u.streak}</div><small>streak</small></div><div class="stat">🪙<div class="big">${u.coins}</div><small>coins</small></div></div></div>
+ <div><div class="card"><h3>Achievements</h3><div class="grid" style="grid-template-columns:repeat(3,1fr)">${u.badges.map(b=>`<div class="card" style="text-align:center">🏆<br><small>${esc(b)}</small></div>`).join('')}</div></div>
+ <div class="card" style="margin-top:15px"><h3>Recent activity</h3>${state.history.slice(0,5).map(h=>`<div class="setting"><span>${esc(h.title)}<br><small class="muted">${new Date(h.date).toLocaleDateString()}</small></span><b>${h.pct}%</b></div>`).join('')||'<p class="muted">No games yet.</p>'}</div></div></div>`;
+}
+function renderStats(){
+ let hist=state.history.slice(0,10).reverse(),max=Math.max(100,...hist.map(h=>h.pct));
+ document.getElementById('view-stats').innerHTML=`<div class="section-head"><div><h2>Analytics</h2><p class="muted">See how your performance changes over time.</p></div></div>
+ <div class="stats"><div class="stat">🎯 Accuracy<div class="big">${state.user.totalAnswered?Math.round(state.user.totalCorrect/state.user.totalAnswered*100):0}%</div></div><div class="stat">📝 Questions<div class="big">${state.user.totalAnswered}</div></div><div class="stat">🎮 Games<div class="big">${state.user.games}</div></div><div class="stat">🔥 Best streak<div class="big">${Math.max(0,...hist.map(h=>h.pct===100?h.correct:0))}</div></div></div>
+ <div class="card" style="margin-top:18px"><h3>Quiz accuracy</h3><div class="chart">${hist.map((h,i)=>`<div class="bar" style="height:${Math.max(8,h.pct/max*100)}%"><span>${h.pct}%</span></div>`).join('')||'<p class="muted">Play a quiz to generate analytics.</p>'}</div></div>`;
+}
+function renderSettings(){
+ document.getElementById('view-settings').innerHTML=`<div class="section-head"><div><h2>Settings</h2><p class="muted">Make Quizora yours.</p></div></div>
+ <div class="card settings-grid"><div><h3>Account</h3><label>Username</label><input id="setName" class="input" value="${esc(state.user.name)}"><label style="display:block;margin-top:12px">Avatar letter</label><input id="setAvatar" maxlength="2" class="input" value="${esc(state.user.avatar)}"></div>
+ <div><h3>Preferences</h3>${[['music','🎵 Music'],['sfx','🔔 Sound effects'],['animations','✨ Animations']].map(([k,l])=>`<div class="setting"><span>${l}</span><button class="toggle ${state[k]?'on':''}" onclick="toggleSetting('${k}',this)"><i></i></button></div>`).join('')}
+ <div class="setting"><span>Theme</span><button class="ghost" onclick="toggleTheme()">${state.theme==='dark'?'🌙 Dark':'☀️ Light'}</button></div></div></div>
+ <div class="card" style="margin-top:15px"><h3>Backup</h3><p class="muted">Export all your quizzes as one JSON file.</p><button class="btn btn-primary" onclick="exportAll()">↓ Export all</button> <button class="ghost" onclick="document.getElementById('jsonInput').click()">↑ Import one quiz</button> <button class="btn btn-danger" onclick="resetData()">Reset local data</button></div>
+ <div style="margin-top:15px;text-align:right"><button class="btn btn-success" onclick="saveSettings()">Save profile</button></div>`;
+}
+function toggleSetting(k,b){state[k]=!state[k];b.classList.toggle('on',state[k]);save();if(k==='music'){state.music?startMusic():stopMusic()}}
+function saveSettings(){state.user.name=document.getElementById('setName').value.trim()||'Learner';state.user.avatar=document.getElementById('setAvatar').value.trim().slice(0,2).toUpperCase()||'L';save();toast('Settings saved!');showView('profile')}
+function exportAll(){download(JSON.stringify({version:1,quizzes:state.quizzes},null,2),'quizora-backup.json','application/json')}
+function resetData(){if(confirm('Reset all local Quizora data?')){localStorage.removeItem(KEY);location.reload()}}
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';save();document.querySelector('.view.active')&&showView(document.querySelector('.view.active').id.replace('view-',''))}
+function toggleMusic(){state.music=!state.music;save();state.music?startMusic():stopMusic()}
+function startMusic(){
+ if(!state.music)return;if(!musicCtx)musicCtx=new (window.AudioContext||window.webkitAudioContext)();
+ stopMusic();let notes=[261.63,329.63,392,523.25],i=0;
+ musicTimer=setInterval(()=>{if(!state.music)return;let o=musicCtx.createOscillator(),g=musicCtx.createGain();o.frequency.value=notes[i++%notes.length];o.type='sine';g.gain.setValueAtTime(.025,musicCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,musicCtx.currentTime+.5);o.connect(g).connect(musicCtx.destination);o.start();o.stop(musicCtx.currentTime+.5)},650);
+}
+function stopMusic(){if(musicTimer)clearInterval(musicTimer);musicTimer=null}
+function playSfx(kind){
+ if(!state.sfx)return;try{let c=musicCtx||new (window.AudioContext||window.webkitAudioContext)();let o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=kind==='correct'?740:kind==='wrong'?180:kind==='win'?880:420;g.gain.value=.06;o.connect(g).connect(c.destination);o.start();o.stop(c.currentTime+.16)}catch{}}
+function confetti(){if(!state.animations)return;let wrap=document.createElement('div');wrap.className='confetti';for(let i=0;i<70;i++){let p=document.createElement('i');p.className='piece';p.style.left=Math.random()*100+'%';p.style.top='-20px';p.style.background=`hsl(${Math.random()*360},90%,65%)`;p.style.animationDelay=Math.random()*.5+'s';wrap.appendChild(p)}document.body.appendChild(wrap);setTimeout(()=>wrap.remove(),2200)}
+document.addEventListener('keydown',e=>{
+ if(!game||game.ended)return;
+ if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;
+ if(e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){e.preventDefault();if(game.answers[game.index]===null){let q=game.quiz.questions[game.index];if(e.key==='Enter'&&q.options.length)chooseAnswer(0)}else nextQuestion()}
+ if(e.key==='ArrowLeft'){e.preventDefault();prevQuestion()}
+});
+let touchX=null;document.addEventListener('touchstart',e=>touchX=e.changedTouches[0].screenX,{passive:true});document.addEventListener('touchend',e=>{if(touchX===null||!game)return;let dx=e.changedTouches[0].screenX-touchX;if(Math.abs(dx)>60)(dx<0?nextQuestion:prevQuestion)();touchX=null},{passive:true});
+updateShell();showView('home');
+</script>
+</body>
+</html>
